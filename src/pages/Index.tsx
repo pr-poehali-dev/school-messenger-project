@@ -34,7 +34,7 @@ type Chat = {
 
 const Index = () => {
   const [userRole] = useState<UserRole>('admin');
-  const [selectedChat, setSelectedChat] = useState<string | null>(null);
+  const [selectedChat, setSelectedChat] = useState<string | null>('1');
   const [messageText, setMessageText] = useState('');
   const [attachments, setAttachments] = useState<AttachedFile[]>([]);
   const [messages, setMessages] = useState<Message[]>([

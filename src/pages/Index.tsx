@@ -132,30 +132,44 @@ const Index = () => {
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const newAttachment: AttachedFile = {
-        type: 'file',
-        fileName: file.name,
-        fileSize: `${(file.size / 1024).toFixed(0)} KB`,
-      };
-      setAttachments([...attachments, newAttachment]);
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const newAttachments: AttachedFile[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        newAttachments.push({
+          type: 'file',
+          fileName: file.name,
+          fileSize: `${(file.size / 1024).toFixed(0)} KB`,
+        });
+      }
+      setAttachments([...attachments, ...newAttachments]);
     }
     if (event.target) event.target.value = '';
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const newAttachment: AttachedFile = {
-          type: 'image',
-          fileUrl: e.target?.result as string,
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const newAttachments: AttachedFile[] = [];
+      let filesProcessed = 0;
+      
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          newAttachments.push({
+            type: 'image',
+            fileUrl: e.target?.result as string,
+          });
+          filesProcessed++;
+          
+          if (filesProcessed === files.length) {
+            setAttachments([...attachments, ...newAttachments]);
+          }
         };
-        setAttachments([...attachments, newAttachment]);
-      };
-      reader.readAsDataURL(file);
+        reader.readAsDataURL(file);
+      }
     }
     if (event.target) event.target.value = '';
   };
@@ -489,6 +503,7 @@ const Index = () => {
                   ref={imageInputRef}
                   type="file"
                   accept="image/*"
+                  multiple
                   className="hidden"
                   onChange={handleImageUpload}
                 />
@@ -504,6 +519,7 @@ const Index = () => {
                 <input
                   ref={fileInputRef}
                   type="file"
+                  multiple
                   className="hidden"
                   onChange={handleFileUpload}
                 />

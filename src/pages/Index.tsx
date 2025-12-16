@@ -108,8 +108,8 @@ const Index = () => {
         <div className="p-4 border-b border-border">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">LS</span>
+              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center p-2">
+                <img src="/linea-logo.svg" alt="LineaSchool" className="w-full h-full" />
               </div>
               <div>
                 <h1 className="font-semibold text-lg">LineaSchool</h1>

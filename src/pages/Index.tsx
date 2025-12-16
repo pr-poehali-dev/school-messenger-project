@@ -153,7 +153,7 @@ const Index = () => {
           filesProcessed++;
           
           if (filesProcessed === files.length) {
-            setAttachments([...attachments, ...newAttachments]);
+            setAttachments(prev => [...prev, ...newAttachments]);
           }
         };
         reader.readAsDataURL(file);

@@ -13,16 +13,20 @@ import {
 
 type UserRole = 'admin' | 'teacher' | 'parent';
 
+type AttachedFile = {
+  type: 'image' | 'file';
+  fileUrl?: string;
+  fileName?: string;
+  fileSize?: string;
+};
+
 type Message = {
   id: string;
   text?: string;
   sender: string;
   timestamp: string;
   isOwn: boolean;
-  type?: 'text' | 'image' | 'file';
-  fileUrl?: string;
-  fileName?: string;
-  fileSize?: string;
+  attachments?: AttachedFile[];
   reactions?: { emoji: string; count: number; users: string[] }[];
 };
 
@@ -41,6 +45,7 @@ const Index = () => {
   const [userRole] = useState<UserRole>('admin');
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [messageText, setMessageText] = useState('');
+  const [attachments, setAttachments] = useState<AttachedFile[]>([]);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -48,7 +53,6 @@ const Index = () => {
       sender: 'Мама Иванова',
       timestamp: '14:20',
       isOwn: false,
-      type: 'text',
     },
     {
       id: '2',
@@ -56,12 +60,14 @@ const Index = () => {
       sender: 'Вы',
       timestamp: '14:21',
       isOwn: true,
-      type: 'text',
     },
     {
       id: '3',
-      type: 'image',
-      fileUrl: 'https://cdn.poehali.dev/files/WhatsApp%20Image%202025-11-04%20at%2017.17.39.jpeg',
+      text: 'Вот фото с урока',
+      attachments: [{
+        type: 'image',
+        fileUrl: 'https://cdn.poehali.dev/files/WhatsApp%20Image%202025-11-04%20at%2017.17.39.jpeg',
+      }],
       sender: 'Мама Иванова',
       timestamp: '14:22',
       isOwn: false,
@@ -72,7 +78,6 @@ const Index = () => {
       sender: 'Мама Иванова',
       timestamp: '14:23',
       isOwn: false,
-      type: 'text',
       reactions: [
         { emoji: '👍', count: 2, users: ['Учитель', 'Администратор'] },
         { emoji: '❤️', count: 1, users: ['Вы'] },
@@ -111,34 +116,32 @@ const Index = () => {
   ];
 
   const handleSendMessage = () => {
-    if (messageText.trim()) {
+    if (messageText.trim() || attachments.length > 0) {
       const newMessage: Message = {
         id: Date.now().toString(),
-        text: messageText,
+        text: messageText || undefined,
         sender: 'Вы',
         timestamp: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
         isOwn: true,
-        type: 'text',
+        attachments: attachments.length > 0 ? attachments : undefined,
       };
       setMessages([...messages, newMessage]);
       setMessageText('');
+      setAttachments([]);
     }
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const newMessage: Message = {
-        id: Date.now().toString(),
+      const newAttachment: AttachedFile = {
         type: 'file',
         fileName: file.name,
         fileSize: `${(file.size / 1024).toFixed(0)} KB`,
-        sender: 'Вы',
-        timestamp: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
-        isOwn: true,
       };
-      setMessages([...messages, newMessage]);
+      setAttachments([...attachments, newAttachment]);
     }
+    if (event.target) event.target.value = '';
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -146,18 +149,19 @@ const Index = () => {
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        const newMessage: Message = {
-          id: Date.now().toString(),
+        const newAttachment: AttachedFile = {
           type: 'image',
           fileUrl: e.target?.result as string,
-          sender: 'Вы',
-          timestamp: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
-          isOwn: true,
         };
-        setMessages([...messages, newMessage]);
+        setAttachments([...attachments, newAttachment]);
       };
       reader.readAsDataURL(file);
     }
+    if (event.target) event.target.value = '';
+  };
+
+  const removeAttachment = (index: number) => {
+    setAttachments(attachments.filter((_, i) => i !== index));
   };
 
   const handleReaction = (messageId: string, emoji: string) => {
@@ -330,57 +334,59 @@ const Index = () => {
                             : 'bg-card text-foreground rounded-bl-none'
                         }`}
                       >
-                        {message.type === 'image' && message.fileUrl && (
-                          <div className="p-1">
-                            <img 
-                              src={message.fileUrl} 
-                              alt="Изображение" 
-                              className="rounded-lg max-w-xs max-h-80 object-cover"
-                            />
-                            <div className="flex items-center justify-end gap-1 px-2 pb-1 mt-1">
-                              <span className="text-[11px] text-muted-foreground">
-                                {message.timestamp}
-                              </span>
-                              {message.isOwn && (
-                                <Icon name="CheckCheck" size={14} className="text-primary" />
-                              )}
-                            </div>
+                        {!message.isOwn && (
+                          <p className="text-xs font-medium text-primary mb-1 px-3 pt-2">
+                            {message.sender}
+                          </p>
+                        )}
+
+                        {message.attachments && message.attachments.length > 0 && (
+                          <div className="space-y-1">
+                            {message.attachments.map((attachment, idx) => (
+                              <div key={idx}>
+                                {attachment.type === 'image' && attachment.fileUrl && (
+                                  <div className="p-1">
+                                    <img 
+                                      src={attachment.fileUrl} 
+                                      alt="Изображение" 
+                                      className="rounded-lg max-w-xs max-h-80 object-cover"
+                                    />
+                                  </div>
+                                )}
+                                
+                                {attachment.type === 'file' && (
+                                  <div className="px-3 py-2 flex items-center gap-3 min-w-[280px]">
+                                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                                      <Icon name="FileText" size={24} className="text-primary" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-sm font-medium truncate">{attachment.fileName}</p>
+                                      <p className="text-xs text-muted-foreground">{attachment.fileSize}</p>
+                                    </div>
+                                    <Button variant="ghost" size="icon" className="flex-shrink-0">
+                                      <Icon name="Download" size={18} />
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
                           </div>
                         )}
                         
-                        {message.type === 'file' && (
-                          <div className="p-3 flex items-center gap-3 min-w-[280px]">
-                            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                              <Icon name="FileText" size={24} className="text-primary" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium truncate">{message.fileName}</p>
-                              <p className="text-xs text-muted-foreground">{message.fileSize}</p>
-                            </div>
-                            <Button variant="ghost" size="icon" className="flex-shrink-0">
-                              <Icon name="Download" size={18} />
-                            </Button>
-                          </div>
-                        )}
-                        
-                        {message.type === 'text' && (
+                        {message.text && (
                           <div className="px-3 py-2">
-                            {!message.isOwn && (
-                              <p className="text-xs font-medium text-primary mb-1">
-                                {message.sender}
-                              </p>
-                            )}
                             <p className="text-[14.2px] leading-[19px] break-words">{message.text}</p>
-                            <div className="flex items-center justify-end gap-1 mt-1">
-                              <span className="text-[11px] text-muted-foreground">
-                                {message.timestamp}
-                              </span>
-                              {message.isOwn && (
-                                <Icon name="CheckCheck" size={14} className="text-primary" />
-                              )}
-                            </div>
                           </div>
                         )}
+
+                        <div className="flex items-center justify-end gap-1 px-3 pb-2">
+                          <span className="text-[11px] text-muted-foreground">
+                            {message.timestamp}
+                          </span>
+                          {message.isOwn && (
+                            <Icon name="CheckCheck" size={14} className="text-primary" />
+                          )}
+                        </div>
                       </div>
 
                       {message.reactions && message.reactions.length > 0 && (
@@ -429,6 +435,51 @@ const Index = () => {
             </div>
 
             <div className="bg-card border-t border-border px-4 py-3">
+              {attachments.length > 0 && (
+                <div className="mb-3 flex flex-wrap gap-2">
+                  {attachments.map((attachment, idx) => (
+                    <div 
+                      key={idx}
+                      className="relative group bg-accent rounded-lg overflow-hidden"
+                    >
+                      {attachment.type === 'image' && attachment.fileUrl && (
+                        <div className="relative">
+                          <img 
+                            src={attachment.fileUrl} 
+                            alt="Preview" 
+                            className="h-20 w-20 object-cover"
+                          />
+                          <button
+                            onClick={() => removeAttachment(idx)}
+                            className="absolute top-1 right-1 bg-destructive text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <Icon name="X" size={14} />
+                          </button>
+                        </div>
+                      )}
+                      
+                      {attachment.type === 'file' && (
+                        <div className="flex items-center gap-2 p-2 pr-8 min-w-[200px]">
+                          <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <Icon name="FileText" size={20} className="text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-medium truncate">{attachment.fileName}</p>
+                            <p className="text-[10px] text-muted-foreground">{attachment.fileSize}</p>
+                          </div>
+                          <button
+                            onClick={() => removeAttachment(idx)}
+                            className="absolute top-2 right-2 bg-destructive text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <Icon name="X" size={12} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon" className="text-muted-foreground">
                   <Icon name="Smile" size={20} />
@@ -478,6 +529,7 @@ const Index = () => {
                   onClick={handleSendMessage}
                   size="icon"
                   className="bg-primary hover:bg-primary/90 text-white"
+                  disabled={!messageText.trim() && attachments.length === 0}
                 >
                   <Icon name="Send" size={18} />
                 </Button>

@@ -126,6 +126,15 @@ const Index = () => {
         isOwn: true,
       },
     ],
+    '4': [
+      {
+        id: '1',
+        text: 'Здравствуйте! Я новый родитель, хотел бы обсудить успеваемость моего ребёнка.',
+        sender: 'Папа Ковалёв Дмитрий',
+        timestamp: '16:25',
+        isOwn: false,
+      },
+    ],
   });
 
   const messages = selectedChat ? (chatMessages[selectedChat] || []) : [];
@@ -154,6 +163,14 @@ const Index = () => {
       timestamp: 'Вчера',
       unread: 5,
       type: 'group',
+    },
+    {
+      id: '4',
+      name: 'Папа Ковалёв Дмитрий',
+      lastMessage: 'Здравствуйте! Я новый родитель...',
+      timestamp: '16:25',
+      unread: 1,
+      type: 'private',
     },
   ];
 

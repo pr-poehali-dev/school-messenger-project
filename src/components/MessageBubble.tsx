@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import {
@@ -33,10 +33,43 @@ type MessageBubbleProps = {
 };
 
 export const MessageBubble = ({ message, onReaction }: MessageBubbleProps) => {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
   const images = message.attachments?.filter(a => a.type === 'image') || [];
   const files = message.attachments?.filter(a => a.type === 'file') || [];
+
+  const openImage = (index: number) => {
+    setSelectedImageIndex(index);
+  };
+
+  const closeImage = () => {
+    setSelectedImageIndex(null);
+  };
+
+  const nextImage = () => {
+    if (selectedImageIndex !== null && selectedImageIndex < images.length - 1) {
+      setSelectedImageIndex(selectedImageIndex + 1);
+    }
+  };
+
+  const prevImage = () => {
+    if (selectedImageIndex !== null && selectedImageIndex > 0) {
+      setSelectedImageIndex(selectedImageIndex - 1);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedImageIndex === null) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') nextImage();
+      if (e.key === 'ArrowLeft') prevImage();
+      if (e.key === 'Escape') closeImage();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedImageIndex, images.length]);
 
   const getGridLayout = (count: number) => {
     if (count === 1) return 'grid-cols-1';
@@ -78,7 +111,7 @@ export const MessageBubble = ({ message, onReaction }: MessageBubbleProps) => {
                   <div 
                     key={idx} 
                     className={`${getImageSize(Math.min(images.length, 4), idx)} overflow-hidden rounded-lg cursor-pointer relative group/img`}
-                    onClick={() => setSelectedImage(img.fileUrl || null)}
+                    onClick={() => openImage(idx)}
                   >
                     <img 
                       src={img.fileUrl} 
@@ -172,23 +205,56 @@ export const MessageBubble = ({ message, onReaction }: MessageBubbleProps) => {
         </Popover>
       </div>
 
-      <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+      <Dialog open={selectedImageIndex !== null} onOpenChange={closeImage}>
         <DialogContent className="max-w-4xl w-full p-0 bg-black/95 border-none">
           <div className="relative">
             <Button
               variant="ghost"
               size="icon"
               className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/70 text-white"
-              onClick={() => setSelectedImage(null)}
+              onClick={closeImage}
             >
               <Icon name="X" size={24} />
             </Button>
-            {selectedImage && (
-              <img 
-                src={selectedImage} 
-                alt="Увеличенное изображение"
-                className="w-full h-auto max-h-[90vh] object-contain"
-              />
+            
+            {selectedImageIndex !== null && images[selectedImageIndex] && (
+              <>
+                <img 
+                  src={images[selectedImageIndex].fileUrl} 
+                  alt={`Изображение ${selectedImageIndex + 1} из ${images.length}`}
+                  className="w-full h-auto max-h-[90vh] object-contain"
+                />
+                
+                {images.length > 1 && (
+                  <>
+                    {selectedImageIndex > 0 && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-12 h-12"
+                        onClick={prevImage}
+                      >
+                        <Icon name="ChevronLeft" size={32} />
+                      </Button>
+                    )}
+                    
+                    {selectedImageIndex < images.length - 1 && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-12 h-12"
+                        onClick={nextImage}
+                      >
+                        <Icon name="ChevronRight" size={32} />
+                      </Button>
+                    )}
+                    
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                      {selectedImageIndex + 1} / {images.length}
+                    </div>
+                  </>
+                )}
+              </>
             )}
           </div>
         </DialogContent>

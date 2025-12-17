@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Icon from '@/components/ui/icon';
 import { ChatSidebar } from '@/components/ChatSidebar';
 import { ChatArea } from '@/components/ChatArea';
@@ -34,9 +34,10 @@ type Chat = {
 
 const Index = () => {
   const [userRole] = useState<UserRole>('admin');
-  const [selectedChat, setSelectedChat] = useState<string | null>('1');
+  const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [messageText, setMessageText] = useState('');
   const [attachments, setAttachments] = useState<AttachedFile[]>([]);
+  const [chats, setChats] = useState<Chat[]>([]);
   
   const [chatMessages, setChatMessages] = useState<Record<string, Message[]>>({
     '1': [
@@ -139,40 +140,51 @@ const Index = () => {
 
   const messages = selectedChat ? (chatMessages[selectedChat] || []) : [];
 
-  const mockChats: Chat[] = [
-    {
-      id: '1',
-      name: 'Группа: Иванов Пётр',
-      lastMessage: 'Домашнее задание выполнено',
-      timestamp: '14:23',
-      unread: 2,
-      type: 'group',
-    },
-    {
-      id: '2',
-      name: 'Мама Петрова Анна',
-      lastMessage: 'Спасибо за информацию',
-      timestamp: '13:45',
-      unread: 0,
-      type: 'private',
-    },
-    {
-      id: '3',
-      name: 'Группа: Смирнова Мария',
-      lastMessage: 'Учитель математики: Отличная работа!',
-      timestamp: 'Вчера',
-      unread: 5,
-      type: 'group',
-    },
-    {
-      id: '4',
-      name: 'Папа Ковалёв Дмитрий',
-      lastMessage: 'Здравствуйте! Я новый родитель...',
-      timestamp: '16:25',
-      unread: 1,
-      type: 'private',
-    },
-  ];
+  useEffect(() => {
+    setChats([
+      {
+        id: '4',
+        name: 'Папа Ковалёв Дмитрий',
+        lastMessage: 'Здравствуйте! Я новый родитель...',
+        timestamp: '16:25',
+        unread: 1,
+        type: 'private',
+      },
+      {
+        id: '1',
+        name: 'Группа: Иванов Пётр',
+        lastMessage: 'Домашнее задание выполнено',
+        timestamp: '14:23',
+        unread: 2,
+        type: 'group',
+      },
+      {
+        id: '2',
+        name: 'Мама Петрова Анна',
+        lastMessage: 'Спасибо за информацию',
+        timestamp: '13:45',
+        unread: 0,
+        type: 'private',
+      },
+      {
+        id: '3',
+        name: 'Группа: Смирнова Мария',
+        lastMessage: 'Учитель математики: Отличная работа!',
+        timestamp: 'Вчера',
+        unread: 5,
+        type: 'group',
+      },
+    ]);
+  }, []);
+
+  const handleSelectChat = (chatId: string) => {
+    setSelectedChat(chatId);
+    setChats(prevChats => 
+      prevChats.map(chat => 
+        chat.id === chatId ? { ...chat, unread: 0 } : chat
+      )
+    );
+  };
 
   const handleSendMessage = () => {
     if (!selectedChat || (!messageText.trim() && attachments.length === 0)) return;
@@ -280,9 +292,9 @@ const Index = () => {
     <div className="flex h-screen bg-background">
       <ChatSidebar 
         userRole={userRole}
-        chats={mockChats}
+        chats={chats}
         selectedChat={selectedChat}
-        onSelectChat={setSelectedChat}
+        onSelectChat={handleSelectChat}
       />
 
       <div className="flex-1 flex flex-col">
@@ -291,7 +303,7 @@ const Index = () => {
             <ChatArea 
               messages={messages}
               onReaction={handleReaction}
-              chatName={mockChats.find(c => c.id === selectedChat)?.name || ''}
+              chatName={chats.find(c => c.id === selectedChat)?.name || ''}
             />
             <MessageInput 
               messageText={messageText}

@@ -73,11 +73,11 @@ export const MessageBubble = ({ message, onReaction }: MessageBubbleProps) => {
 
           {images.length > 0 && (
             <div className="p-1">
-              <div className={`grid gap-0.5 ${getGridLayout(images.length)} max-w-xs`}>
-                {images.map((img, idx) => (
+              <div className={`grid gap-0.5 ${getGridLayout(Math.min(images.length, 4))} max-w-xs`}>
+                {images.slice(0, 4).map((img, idx) => (
                   <div 
                     key={idx} 
-                    className={`${getImageSize(images.length, idx)} overflow-hidden rounded-lg cursor-pointer relative group/img`}
+                    className={`${getImageSize(Math.min(images.length, 4), idx)} overflow-hidden rounded-lg cursor-pointer relative group/img`}
                     onClick={() => setSelectedImage(img.fileUrl || null)}
                   >
                     <img 

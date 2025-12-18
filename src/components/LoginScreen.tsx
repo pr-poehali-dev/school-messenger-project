@@ -10,10 +10,10 @@ type LoginScreenProps = {
 };
 
 const ROLES = [
-  { id: 'student' as UserRole, name: 'Ученик', icon: 'GraduationCap', color: 'from-[#52B788] to-[#40916C]' },
-  { id: 'parent' as UserRole, name: 'Родитель', icon: 'Heart', color: 'from-[#74C69D] to-[#52B788]' },
-  { id: 'teacher' as UserRole, name: 'Педагог', icon: 'Award', color: 'from-[#40916C] to-[#2D6A4F]' },
-  { id: 'admin' as UserRole, name: 'Админ', icon: 'Settings', color: 'from-[#2D6A4F] to-[#1B4332]' },
+  { id: 'student' as UserRole, name: 'Ученик', image: 'https://cdn.poehali.dev/files/Ученик.jpg', color: 'from-[#52B788] to-[#40916C]' },
+  { id: 'parent' as UserRole, name: 'Родитель', image: 'https://cdn.poehali.dev/files/Родитель.jpg', color: 'from-[#74C69D] to-[#52B788]' },
+  { id: 'teacher' as UserRole, name: 'Педагог', image: 'https://cdn.poehali.dev/files/Педагог.jpg', color: 'from-[#40916C] to-[#2D6A4F]' },
+  { id: 'admin' as UserRole, name: 'Админ', image: 'https://cdn.poehali.dev/files/Админ.jpg', color: 'from-[#2D6A4F] to-[#1B4332]' },
 ];
 
 const ADMIN_LOGINS = ['79236251611', '89236251611', '9236251611', 'abram.viktoriya.00@mail.ru'];
@@ -89,8 +89,8 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                 <div className={`absolute inset-0 bg-gradient-to-br ${role.color} opacity-0 group-hover:opacity-5 transition-opacity`} />
                 
                 <div className="relative flex items-center gap-4">
-                  <div className={`flex items-center justify-center w-16 h-16 bg-gradient-to-br ${role.color} rounded-2xl shadow-lg flex-shrink-0`}>
-                    <Icon name={role.icon} size={32} className="text-white" />
+                  <div className="w-16 h-16 rounded-2xl shadow-lg flex-shrink-0 overflow-hidden">
+                    <img src={role.image} alt={role.name} className="w-full h-full object-cover" />
                   </div>
                   
                   <div className="flex-1 text-left">
@@ -123,8 +123,8 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
           </button>
 
           <div className="text-center mb-8">
-            <div className={`inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br ${currentRole.color} rounded-2xl mb-4 shadow-lg`}>
-              <Icon name={currentRole.icon} size={36} className="text-white" />
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-4 shadow-lg overflow-hidden">
+              <img src={currentRole.image} alt={currentRole.name} className="w-full h-full object-cover" />
             </div>
             <h2 className="text-2xl font-bold mb-2">Вход как {currentRole.name}</h2>
             <p className="text-sm text-muted-foreground">

@@ -11,7 +11,7 @@ type LoginScreenProps = {
 
 const ROLES = [
   { id: 'student' as UserRole, name: 'Ученик', icon: 'GraduationCap', color: 'from-blue-500 to-blue-600' },
-  { id: 'parent' as UserRole, name: 'Родитель', icon: 'Users', color: 'from-green-500 to-green-600' },
+  { id: 'parent' as UserRole, name: 'Родитель', icon: 'Users', color: 'from-pink-500 to-pink-600' },
   { id: 'teacher' as UserRole, name: 'Педагог', icon: 'BookOpen', color: 'from-purple-500 to-purple-600' },
   { id: 'admin' as UserRole, name: 'Администратор', icon: 'Shield', color: 'from-orange-500 to-orange-600' },
 ];
@@ -89,7 +89,7 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                 <div className={`absolute inset-0 bg-gradient-to-br ${role.color} opacity-0 group-hover:opacity-5 transition-opacity`} />
                 
                 <div className="relative">
-                  <div className={`inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br ${role.color} rounded-xl mb-3 shadow-lg`}>
+                  <div className={`inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br ${role.color} rounded-full mb-3 shadow-lg`}>
                     <Icon name={role.icon} size={24} className="text-white" />
                   </div>
                   <h3 className="text-base font-bold mb-1">{role.name}</h3>

@@ -6,7 +6,6 @@ import { MessageInput } from '@/components/MessageInput';
 import { LoginScreen } from '@/components/LoginScreen';
 import { ProfileSettings } from '@/components/ProfileSettings';
 import { AppSettings } from '@/components/AppSettings';
-import { GroupTopics } from '@/components/GroupTopics';
 
 type UserRole = 'admin' | 'teacher' | 'parent' | 'student';
 
@@ -52,7 +51,7 @@ type GroupTopics = {
 const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
-  const [currentView, setCurrentView] = useState<'chat' | 'profile' | 'settings' | 'topics'>('chat');
+  const [currentView, setCurrentView] = useState<'chat' | 'profile' | 'settings'>('chat');
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
@@ -217,30 +216,28 @@ const Index = () => {
 
   const handleSelectChat = (chatId: string) => {
     const chat = chats.find(c => c.id === chatId);
+    setSelectedChat(chatId);
+    
     if (chat && chat.type === 'group') {
       setSelectedGroup(chatId);
-      setCurrentView('topics');
+      const topics = groupTopics[chatId];
+      if (topics && topics.length > 0) {
+        setSelectedTopic(topics[0].id);
+      }
     } else {
-      setSelectedChat(chatId);
+      setSelectedGroup(null);
       setSelectedTopic(null);
-      setChats(prevChats => 
-        prevChats.map(chat => 
-          chat.id === chatId ? { ...chat, unread: 0 } : chat
-        )
-      );
     }
+    
+    setChats(prevChats => 
+      prevChats.map(chat => 
+        chat.id === chatId ? { ...chat, unread: 0 } : chat
+      )
+    );
   };
 
   const handleSelectTopic = (topicId: string) => {
     setSelectedTopic(topicId);
-    setSelectedChat(topicId);
-    setCurrentView('chat');
-  };
-
-  const handleBackFromTopics = () => {
-    setSelectedGroup(null);
-    setSelectedTopic(null);
-    setCurrentView('chat');
   };
 
   const handleSendMessage = () => {
@@ -395,19 +392,6 @@ const Index = () => {
     );
   }
 
-  if (currentView === 'topics' && selectedGroup && groupTopics[selectedGroup]) {
-    return (
-      <div className="flex h-screen bg-background">
-        <GroupTopics
-          groupName={chats.find(c => c.id === selectedGroup)?.name || ''}
-          topics={groupTopics[selectedGroup]}
-          onSelectTopic={handleSelectTopic}
-          onBack={handleBackFromTopics}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="flex h-screen bg-background">
       <ChatSidebar
@@ -427,6 +411,10 @@ const Index = () => {
               messages={messages}
               onReaction={handleReaction}
               chatName={chats.find(c => c.id === selectedChat)?.name || ''}
+              isGroup={selectedGroup !== null}
+              topics={selectedGroup ? groupTopics[selectedGroup] : undefined}
+              selectedTopic={selectedTopic || undefined}
+              onTopicSelect={handleSelectTopic}
             />
             <MessageInput 
               messageText={messageText}

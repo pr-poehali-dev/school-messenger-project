@@ -20,27 +20,38 @@ type Message = {
   reactions?: { emoji: string; count: number; users: string[] }[];
 };
 
+type Topic = {
+  id: string;
+  name: string;
+  icon: string;
+  unread: number;
+};
+
 type ChatAreaProps = {
   messages: Message[];
   onReaction: (messageId: string, emoji: string) => void;
   chatName: string;
+  isGroup?: boolean;
+  topics?: Topic[];
+  selectedTopic?: string;
+  onTopicSelect?: (topicId: string) => void;
 };
 
-export const ChatArea = ({ messages, onReaction, chatName }: ChatAreaProps) => {
+export const ChatArea = ({ messages, onReaction, chatName, isGroup, topics, selectedTopic, onTopicSelect }: ChatAreaProps) => {
   return (
     <>
-      <div className="bg-card border-b border-border px-4 py-3">
-        <div className="flex items-center justify-between">
+      <div className="bg-card border-b border-border">
+        <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
             <Avatar className="w-10 h-10">
               <AvatarFallback className="bg-primary text-white">
-                <Icon name="Users" size={18} />
+                {isGroup ? <Icon name="Users" size={18} /> : <Icon name="User" size={18} />}
               </AvatarFallback>
             </Avatar>
             <div>
               <h2 className="font-medium text-base">{chatName}</h2>
               <p className="text-xs text-muted-foreground">
-                {chatName.startsWith('Группа:') ? '5 участников' : 'Личный чат'}
+                {isGroup ? '5 участников' : 'Личный чат'}
               </p>
             </div>
           </div>
@@ -59,6 +70,32 @@ export const ChatArea = ({ messages, onReaction, chatName }: ChatAreaProps) => {
             </Button>
           </div>
         </div>
+        
+        {isGroup && topics && topics.length > 0 && (
+          <div className="px-4 pb-3 border-t border-border/50">
+            <div className="flex gap-2 overflow-x-auto py-2 scrollbar-hide">
+              {topics.map((topic) => (
+                <button
+                  key={topic.id}
+                  onClick={() => onTopicSelect?.(topic.id)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full border-2 whitespace-nowrap transition-all ${
+                    selectedTopic === topic.id
+                      ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                      : 'bg-card border-border hover:border-primary/50 hover:bg-accent'
+                  }`}
+                >
+                  <Icon name={topic.icon} size={14} />
+                  <span className="text-sm font-medium">{topic.name}</span>
+                  {topic.unread > 0 && selectedTopic !== topic.id && (
+                    <span className="bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                      {topic.unread}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div 

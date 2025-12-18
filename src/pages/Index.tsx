@@ -3,8 +3,9 @@ import Icon from '@/components/ui/icon';
 import { ChatSidebar } from '@/components/ChatSidebar';
 import { ChatArea } from '@/components/ChatArea';
 import { MessageInput } from '@/components/MessageInput';
+import { LoginScreen } from '@/components/LoginScreen';
 
-type UserRole = 'admin' | 'teacher' | 'parent';
+type UserRole = 'admin' | 'teacher' | 'parent' | 'student';
 
 type AttachedFile = {
   type: 'image' | 'file';
@@ -33,7 +34,8 @@ type Chat = {
 };
 
 const Index = () => {
-  const [userRole] = useState<UserRole>('admin');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [messageText, setMessageText] = useState('');
   const [attachments, setAttachments] = useState<AttachedFile[]>([]);
@@ -245,6 +247,11 @@ const Index = () => {
     setAttachments(attachments.filter((_, i) => i !== index));
   };
 
+  const handleLogin = (role: UserRole) => {
+    setUserRole(role);
+    setIsAuthenticated(true);
+  };
+
   const handleReaction = (messageId: string, emoji: string) => {
     if (!selectedChat) return;
     
@@ -287,6 +294,10 @@ const Index = () => {
       })
     }));
   };
+
+  if (!isAuthenticated || !userRole) {
+    return <LoginScreen onLogin={handleLogin} />;
+  }
 
   return (
     <div className="flex h-screen bg-background">

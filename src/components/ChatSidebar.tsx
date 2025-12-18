@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Icon from '@/components/ui/icon';
 
-type UserRole = 'admin' | 'teacher' | 'parent';
+type UserRole = 'admin' | 'teacher' | 'parent' | 'student';
 
 type Chat = {
   id: string;
@@ -38,6 +38,7 @@ export const ChatSidebar = ({ userRole, chats, selectedChat, onSelectChat }: Cha
                 {userRole === 'admin' && 'Администратор'}
                 {userRole === 'teacher' && 'Педагог'}
                 {userRole === 'parent' && 'Родитель'}
+                {userRole === 'student' && 'Ученик'}
               </p>
             </div>
           </div>

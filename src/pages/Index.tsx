@@ -4,6 +4,8 @@ import { ChatSidebar } from '@/components/ChatSidebar';
 import { ChatArea } from '@/components/ChatArea';
 import { MessageInput } from '@/components/MessageInput';
 import { LoginScreen } from '@/components/LoginScreen';
+import { ProfileSettings } from '@/components/ProfileSettings';
+import { AppSettings } from '@/components/AppSettings';
 
 type UserRole = 'admin' | 'teacher' | 'parent' | 'student';
 
@@ -36,6 +38,7 @@ type Chat = {
 const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [currentView, setCurrentView] = useState<'chat' | 'profile' | 'settings'>('chat');
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [messageText, setMessageText] = useState('');
   const [attachments, setAttachments] = useState<AttachedFile[]>([]);
@@ -255,9 +258,22 @@ const Index = () => {
   const handleLogout = () => {
     setIsAuthenticated(false);
     setUserRole(null);
+    setCurrentView('chat');
     setSelectedChat(null);
     setMessageText('');
     setAttachments([]);
+  };
+
+  const handleOpenProfile = () => {
+    setCurrentView('profile');
+  };
+
+  const handleOpenSettings = () => {
+    setCurrentView('settings');
+  };
+
+  const handleBackToChat = () => {
+    setCurrentView('chat');
   };
 
   const handleReaction = (messageId: string, emoji: string) => {
@@ -307,10 +323,28 @@ const Index = () => {
     return <LoginScreen onLogin={handleLogin} />;
   }
 
+  if (currentView === 'profile') {
+    return (
+      <div className="flex h-screen bg-background">
+        <ProfileSettings userRole={userRole} onBack={handleBackToChat} />
+      </div>
+    );
+  }
+
+  if (currentView === 'settings') {
+    return (
+      <div className="flex h-screen bg-background">
+        <AppSettings onBack={handleBackToChat} />
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen bg-background">
       <ChatSidebar
-        onLogout={handleLogout} 
+        onLogout={handleLogout}
+        onOpenProfile={handleOpenProfile}
+        onOpenSettings={handleOpenSettings} 
         userRole={userRole}
         chats={chats}
         selectedChat={selectedChat}

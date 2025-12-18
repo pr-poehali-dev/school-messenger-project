@@ -30,9 +30,11 @@ type ChatSidebarProps = {
   selectedChat: string | null;
   onSelectChat: (chatId: string) => void;
   onLogout?: () => void;
+  onOpenProfile?: () => void;
+  onOpenSettings?: () => void;
 };
 
-export const ChatSidebar = ({ userRole, chats, selectedChat, onSelectChat, onLogout }: ChatSidebarProps) => {
+export const ChatSidebar = ({ userRole, chats, selectedChat, onSelectChat, onLogout, onOpenProfile, onOpenSettings }: ChatSidebarProps) => {
   return (
     <div className="w-[420px] bg-card border-r border-border flex flex-col">
       <div className="p-4 bg-card">
@@ -58,11 +60,11 @@ export const ChatSidebar = ({ userRole, chats, selectedChat, onSelectChat, onLog
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={onOpenProfile}>
                 <Icon name="User" size={16} className="mr-2" />
                 Профиль
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={onOpenSettings}>
                 <Icon name="Settings" size={16} className="mr-2" />
                 Настройки
               </DropdownMenuItem>

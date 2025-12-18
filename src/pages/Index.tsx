@@ -307,7 +307,7 @@ const Index = () => {
         name: 'Группа: Иванов Пётр',
         lastMessage: 'Домашнее задание выполнено',
         timestamp: '14:23',
-        unread: 2,
+        unread: 0,
         type: 'group',
       },
       {
@@ -323,11 +323,26 @@ const Index = () => {
         name: 'Группа: Смирнова Мария',
         lastMessage: 'Учитель математики: Отличная работа!',
         timestamp: 'Вчера',
-        unread: 5,
+        unread: 0,
         type: 'group',
       },
     ]);
   }, []);
+
+  useEffect(() => {
+    setChats(prevChats =>
+      prevChats.map(chat => {
+        if (chat.type === 'group' && groupTopics[chat.id]) {
+          const totalUnread = groupTopics[chat.id].reduce(
+            (sum, topic) => sum + topic.unread,
+            0
+          );
+          return { ...chat, unread: totalUnread };
+        }
+        return chat;
+      })
+    );
+  }, [groupTopics]);
 
   const handleSelectChat = (chatId: string) => {
     const chat = chats.find(c => c.id === chatId);

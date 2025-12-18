@@ -141,7 +141,7 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                 <Icon name="User" size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   type="text"
-                  placeholder="79236251611 или email"
+                  placeholder="Введите логин"
                   value={login}
                   onChange={(e) => setLogin(e.target.value)}
                   className="pl-11 h-12 rounded-xl"

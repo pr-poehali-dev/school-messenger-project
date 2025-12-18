@@ -62,57 +62,109 @@ const Index = () => {
   const [groupTopics] = useState<GroupTopics>({
     '1': [
       { id: '1-important', name: 'Важное', icon: 'AlertCircle', lastMessage: 'Домашнее задание выполнено полностью', timestamp: '14:23', unread: 2 },
-      { id: '1-zoom', name: 'Ссылки Zoom', icon: 'Video', lastMessage: 'Ссылка на урок: zoom.us/j/123...', timestamp: '10:15', unread: 0 },
-      { id: '1-homework', name: 'Домашние задания', icon: 'BookOpen', lastMessage: 'Задание на завтра: страницы 45-50', timestamp: 'Вчера', unread: 1 },
-      { id: '1-reports', name: 'Отчеты о занятиях', icon: 'FileText', lastMessage: 'Отчет за неделю загружен', timestamp: '2 дня', unread: 0 },
+      { id: '1-zoom', name: 'Zoom', icon: 'Video', lastMessage: 'Ссылка на урок: zoom.us/j/123...', timestamp: '10:15', unread: 0 },
+      { id: '1-homework', name: 'ДЗ', icon: 'BookOpen', lastMessage: 'Задание на завтра: страницы 45-50', timestamp: 'Вчера', unread: 1 },
+      { id: '1-reports', name: 'Отчеты', icon: 'FileText', lastMessage: 'Отчет за неделю загружен', timestamp: '2 дня', unread: 0 },
       { id: '1-payment', name: 'Оплата', icon: 'CreditCard', lastMessage: 'Счет на месяц отправлен', timestamp: '3 дня', unread: 1 },
     ],
     '3': [
       { id: '3-important', name: 'Важное', icon: 'AlertCircle', lastMessage: 'Отличная работа на контрольной!', timestamp: 'Вчера', unread: 5 },
-      { id: '3-zoom', name: 'Ссылки Zoom', icon: 'Video', lastMessage: 'Занятие в 15:00', timestamp: 'Вчера', unread: 0 },
-      { id: '3-homework', name: 'Домашние задания', icon: 'BookOpen', lastMessage: 'Новое задание по математике', timestamp: '2 дня', unread: 0 },
-      { id: '3-reports', name: 'Отчеты о занятиях', icon: 'FileText', lastMessage: 'Отчет готов', timestamp: '3 дня', unread: 0 },
+      { id: '3-zoom', name: 'Zoom', icon: 'Video', lastMessage: 'Занятие в 15:00', timestamp: 'Вчера', unread: 0 },
+      { id: '3-homework', name: 'ДЗ', icon: 'BookOpen', lastMessage: 'Новое задание по математике', timestamp: '2 дня', unread: 0 },
+      { id: '3-reports', name: 'Отчеты', icon: 'FileText', lastMessage: 'Отчет готов', timestamp: '3 дня', unread: 0 },
       { id: '3-payment', name: 'Оплата', icon: 'CreditCard', lastMessage: 'Оплачено', timestamp: '5 дней', unread: 0 },
     ],
   });
   
   const [chatMessages, setChatMessages] = useState<Record<string, Message[]>>({
-    '1': [
+    '1-important': [
       {
         id: '1',
-        text: 'Здравствуйте! Как успехи Пети?',
-        sender: 'Мама Иванова',
+        text: 'Внимание! Завтра контрольная работа по математике',
+        sender: 'Учитель',
         timestamp: '14:20',
         isOwn: false,
       },
       {
         id: '2',
-        text: 'Добрый день! Петя хорошо справляется с программой.',
+        text: 'Спасибо за напоминание! Петя готов.',
         sender: 'Вы',
         timestamp: '14:21',
         isOwn: true,
       },
       {
         id: '3',
-        text: 'Вот фото с урока',
-        attachments: [{
-          type: 'image',
-          fileUrl: 'https://cdn.poehali.dev/files/WhatsApp%20Image%202025-11-04%20at%2017.17.39.jpeg',
-        }],
-        sender: 'Мама Иванова',
-        timestamp: '14:22',
-        isOwn: false,
-      },
-      {
-        id: '4',
         text: 'Домашнее задание выполнено полностью.',
         sender: 'Мама Иванова',
         timestamp: '14:23',
         isOwn: false,
         reactions: [
           { emoji: '👍', count: 2, users: ['Учитель', 'Администратор'] },
-          { emoji: '❤️', count: 1, users: ['Вы'] },
         ],
+      },
+    ],
+    '1-zoom': [
+      {
+        id: '1',
+        text: 'Ссылка на урок завтра в 10:00',
+        sender: 'Учитель',
+        timestamp: '10:15',
+        isOwn: false,
+      },
+      {
+        id: '2',
+        text: 'https://zoom.us/j/123456789',
+        sender: 'Учитель',
+        timestamp: '10:15',
+        isOwn: false,
+      },
+    ],
+    '1-homework': [
+      {
+        id: '1',
+        text: 'Задание на завтра: учебник страницы 45-50, упражнения 1-5',
+        sender: 'Учитель',
+        timestamp: 'Вчера',
+        isOwn: false,
+      },
+      {
+        id: '2',
+        text: 'Понятно, спасибо!',
+        sender: 'Вы',
+        timestamp: 'Вчера',
+        isOwn: true,
+      },
+    ],
+    '1-reports': [
+      {
+        id: '1',
+        text: 'Отчет за неделю: Петя активно участвует на уроках, все задания выполняет вовремя',
+        sender: 'Учитель',
+        timestamp: '2 дня',
+        isOwn: false,
+      },
+    ],
+    '1-payment': [
+      {
+        id: '1',
+        text: 'Счет на декабрь: 15000 руб',
+        sender: 'Администратор',
+        timestamp: '3 дня',
+        isOwn: false,
+      },
+      {
+        id: '2',
+        text: 'Когда нужно оплатить?',
+        sender: 'Вы',
+        timestamp: '3 дня',
+        isOwn: true,
+      },
+      {
+        id: '3',
+        text: 'До 25 числа, пожалуйста',
+        sender: 'Администратор',
+        timestamp: '3 дня',
+        isOwn: false,
       },
     ],
     '2': [
@@ -138,7 +190,7 @@ const Index = () => {
         isOwn: false,
       },
     ],
-    '3': [
+    '3-important': [
       {
         id: '1',
         text: 'Отличная работа на контрольной!',
@@ -156,12 +208,71 @@ const Index = () => {
           { emoji: '👍', count: 1, users: ['Учитель математики'] },
         ],
       },
+    ],
+    '3-zoom': [
+      {
+        id: '1',
+        text: 'Ссылка на урок сегодня в 15:00',
+        sender: 'Учитель',
+        timestamp: 'Вчера',
+        isOwn: false,
+      },
+      {
+        id: '2',
+        text: 'https://zoom.us/j/987654321',
+        sender: 'Учитель',
+        timestamp: 'Вчера',
+        isOwn: false,
+      },
+    ],
+    '3-homework': [
+      {
+        id: '1',
+        text: 'Новое задание по математике: решить задачи №10-15 на стр. 67',
+        sender: 'Учитель математики',
+        timestamp: '2 дня',
+        isOwn: false,
+      },
+    ],
+    '3-reports': [
+      {
+        id: '1',
+        text: 'Отчет готов. Мария показывает отличные результаты!',
+        sender: 'Учитель',
+        timestamp: '3 дня',
+        isOwn: false,
+      },
+    ],
+    '3-payment': [
+      {
+        id: '1',
+        text: 'Оплата за ноябрь получена. Спасибо!',
+        sender: 'Администратор',
+        timestamp: '5 дней',
+        isOwn: false,
+      },
+    ],
+    '2': [
+      {
+        id: '1',
+        text: 'Добрый день! Хотела уточнить по расписанию',
+        sender: 'Мама Петрова Анна',
+        timestamp: '13:40',
+        isOwn: false,
+      },
+      {
+        id: '2',
+        text: 'Здравствуйте! Расписание не изменилось, всё по плану',
+        sender: 'Вы',
+        timestamp: '13:43',
+        isOwn: true,
+      },
       {
         id: '3',
-        text: 'Привет! Это тестовое сообщение из нового диалога 👋',
-        sender: 'Вы',
-        timestamp: '16:20',
-        isOwn: true,
+        text: 'Спасибо за информацию',
+        sender: 'Мама Петрова Анна',
+        timestamp: '13:45',
+        isOwn: false,
       },
     ],
     '4': [
@@ -175,7 +286,11 @@ const Index = () => {
     ],
   });
 
-  const messages = selectedChat ? (chatMessages[selectedChat] || []) : [];
+  const messages = selectedTopic 
+    ? (chatMessages[selectedTopic] || []) 
+    : selectedChat 
+    ? (chatMessages[selectedChat] || []) 
+    : [];
 
   useEffect(() => {
     setChats([

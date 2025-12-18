@@ -73,7 +73,7 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               <img 
                 src="https://cdn.poehali.dev/files/WhatsApp Image 2025-11-04 at 17.17.39.jpeg" 
                 alt="LineaSchool" 
-                className="w-24 h-24 rounded-3xl shadow-xl saturate-150 brightness-110" 
+                className="w-28 h-28 rounded-3xl shadow-xl" 
               />
             </div>
             <h1 className="text-5xl font-extrabold" style={{ color: '#3BA662' }}>LineaSchool</h1>
@@ -89,12 +89,12 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                 <div className={`absolute inset-0 bg-gradient-to-br ${role.color} opacity-0 group-hover:opacity-5 transition-opacity`} />
                 
                 <div className="relative flex items-center gap-4">
-                  <div className="w-20 h-20 rounded-full shadow-lg flex-shrink-0 overflow-hidden">
+                  <div className="w-24 h-24 rounded-full shadow-lg flex-shrink-0 overflow-hidden">
                     <img src={role.image} alt={role.name} className="w-full h-full object-cover" />
                   </div>
                   
                   <div className="flex-1 text-left">
-                    <h3 className="text-lg font-bold mb-1">{role.name}</h3>
+                    <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'OpenDyslexic, sans-serif' }}>{role.name}</h3>
                     <div className="text-primary opacity-0 group-hover:opacity-100 transition-opacity">
                       <span className="text-sm font-medium">Войти</span>
                     </div>

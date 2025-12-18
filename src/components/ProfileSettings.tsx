@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,6 +17,9 @@ export const ProfileSettings = ({ userRole, onBack }: ProfileSettingsProps) => {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [bio, setBio] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const getRoleName = (role: UserRole) => {
     switch (role) {
@@ -27,8 +30,33 @@ export const ProfileSettings = ({ userRole, onBack }: ProfileSettingsProps) => {
     }
   };
 
-  const handleSave = () => {
-    console.log('Сохранение профиля:', { name, email, phone, bio });
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setAvatarUrl(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      console.log('Сохранение профиля:', { name, email, phone, bio, avatarUrl });
+      
+      alert('Профиль успешно сохранён!');
+      onBack();
+    } catch (error) {
+      console.error('Ошибка сохранения:', error);
+      alert('Ошибка при сохранении профиля');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -55,12 +83,27 @@ export const ProfileSettings = ({ userRole, onBack }: ProfileSettingsProps) => {
           <div className="bg-card rounded-2xl border border-border p-6 shadow-sm">
             <div className="flex items-center gap-6 mb-6">
               <Avatar className="w-24 h-24 ring-4 ring-primary/20">
-                <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-white text-2xl font-bold">
-                  <Icon name="User" size={40} />
-                </AvatarFallback>
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Аватар" className="w-full h-full object-cover" />
+                ) : (
+                  <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-white text-2xl font-bold">
+                    <Icon name="User" size={40} />
+                  </AvatarFallback>
+                )}
               </Avatar>
               <div>
-                <Button variant="outline" className="rounded-xl mb-2">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handlePhotoUpload}
+                />
+                <Button 
+                  variant="outline" 
+                  className="rounded-xl mb-2"
+                  onClick={() => fileInputRef.current?.click()}
+                >
                   <Icon name="Upload" size={16} className="mr-2" />
                   Загрузить фото
                 </Button>
@@ -156,15 +199,26 @@ export const ProfileSettings = ({ userRole, onBack }: ProfileSettingsProps) => {
           <div className="flex gap-3">
             <Button
               onClick={handleSave}
-              className="flex-1 rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-90"
+              disabled={isSaving}
+              className="flex-1 rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-90 disabled:opacity-50"
             >
-              <Icon name="Save" size={18} className="mr-2" />
-              Сохранить изменения
+              {isSaving ? (
+                <>
+                  <Icon name="Loader2" size={18} className="mr-2 animate-spin" />
+                  Сохранение...
+                </>
+              ) : (
+                <>
+                  <Icon name="Save" size={18} className="mr-2" />
+                  Сохранить изменения
+                </>
+              )}
             </Button>
             <Button
               onClick={onBack}
               variant="outline"
               className="rounded-xl"
+              disabled={isSaving}
             >
               Отмена
             </Button>
